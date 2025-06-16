@@ -66,9 +66,11 @@ public class AngleSnap implements ClientModInitializer {
 
         ClientPlayConnectionEvents.JOIN.register((networkHandler, packetSender, client) -> {
             if (client.isIntegratedServerRunning()) {
-                AngleSnap.CONFIG.loadAnglesAndCameraPositions(Objects.requireNonNull(client.getServer()).getSavePath(WorldSavePath.ROOT).getParent().getFileName().toString(), false);
+                AngleSnap.CONFIG.loadAnglesAndCameraPositions(Objects.requireNonNull(client.getServer()).getSavePath(WorldSavePath.ROOT).getParent().getFileName().toString(), AngleSnapConfig.AngleFolder.SINGLEPLAYER);
+            } else if (Objects.requireNonNull(networkHandler.getServerInfo()).isRealm()) {
+                AngleSnap.CONFIG.loadAnglesAndCameraPositions(networkHandler.getServerInfo().name, AngleSnapConfig.AngleFolder.REALMS);
             } else {
-                AngleSnap.CONFIG.loadAnglesAndCameraPositions(Objects.requireNonNull(networkHandler.getServerInfo()).address, true);
+                AngleSnap.CONFIG.loadAnglesAndCameraPositions(networkHandler.getServerInfo().address, AngleSnapConfig.AngleFolder.MULTIPLAYER);
             }
         });
         ClientPlayConnectionEvents.DISCONNECT.register((networkHandler, client) -> AngleSnap.CONFIG.unloadAnglesAndCameraPositions());

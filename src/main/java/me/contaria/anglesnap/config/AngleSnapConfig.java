@@ -76,8 +76,8 @@ public class AngleSnapConfig {
         return option;
     }
 
-    public void loadAnglesAndCameraPositions(String name, boolean multiplayer) {
-        Path directory = this.resolveDirectory(name, multiplayer);
+    public void loadAnglesAndCameraPositions(String name, AngleFolder folder) {
+        Path directory = this.resolveDirectory(name, folder);
         this.loadAngles(directory);
         this.loadCameraPositions(directory);
     }
@@ -87,8 +87,8 @@ public class AngleSnapConfig {
         this.unloadCameraPositions();
     }
 
-    private Path resolveDirectory(String name, boolean multiplayer) {
-        Path path = CONFIG_DIR.resolve(multiplayer ? "multiplayer" : "singleplayer");
+    private Path resolveDirectory(String name, AngleFolder folder) {
+        Path path = CONFIG_DIR.resolve(folder.getPath());
         try {
             return path.resolve(name);
         } catch (InvalidPathException e) {
@@ -304,5 +304,21 @@ public class AngleSnapConfig {
 
     public Iterable<Option<?>> getOptions() {
         return this.options.values();
+    }
+
+    public enum AngleFolder {
+        SINGLEPLAYER("singleplayer"),
+        REALMS("realms"),
+        MULTIPLAYER("multiplayer");
+
+        private final String path;
+
+        AngleFolder(String path) {
+            this.path = path;
+        }
+
+        public String getPath() {
+            return this.path;
+        }
     }
 }
