@@ -1,20 +1,22 @@
 package me.contaria.anglesnap;
 
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.logging.LogUtils;
 import me.contaria.anglesnap.config.AngleSnapConfig;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
-import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.StickyKeyBinding;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -63,7 +65,7 @@ public class AngleSnap implements ClientModInitializer {
         ));
 
         WorldRenderEvents.LAST.register(AngleSnap::renderOverlay);
-        HudLayerRegistrationCallback.EVENT.register(drawer -> drawer.attachLayerAfter(IdentifiedLayer.DEBUG, Identifier.of("anglesnap", "overlay"), AngleSnap::renderHud));
+        HudElementRegistry.addFirst(Identifier.of("anglesnap", "overlay"), AngleSnap::renderHud);
 
         ClientPlayConnectionEvents.JOIN.register((networkHandler, packetSender, client) -> {
             if (client.isIntegratedServerRunning()) {
@@ -124,7 +126,7 @@ public class AngleSnap implements ClientModInitializer {
 
         Matrix4f matrix4f = matrices.peek().getPositionMatrix();
         MinecraftClient client = MinecraftClient.getInstance();
-        RenderLayer layer = RenderLayer.getGuiTexturedOverlay(angle.getIcon());
+        RenderLayer layer = RenderLayer.getCelestial(angle.getIcon());
         VertexConsumer consumer = client.getBufferBuilders().getEffectVertexConsumers().getBuffer(layer);
         consumer.vertex(matrix4f, -1.0f, -1.0f, 0.0f).color(angle.color).texture(0.0f, 0.0f);
         consumer.vertex(matrix4f, -1.0f, 1.0f, 0.0f).color(angle.color).texture(0.0f, 1.0f);
@@ -168,7 +170,7 @@ public class AngleSnap implements ClientModInitializer {
         TextRenderer textRenderer = client.textRenderer;
         String text = String.format("%.3f / %.3f", MathHelper.wrapDegrees(client.player.getYaw()), MathHelper.wrapDegrees(client.player.getPitch()));
         context.fill(5, 5, 5 + 2 + textRenderer.getWidth(text) + 2, 5 + 2 + textRenderer.fontHeight + 2, -1873784752);
-        context.drawText(textRenderer, text, 5 + 2 + 1, 5 + 2 + 1, 14737632, false);
+        context.drawText(textRenderer, text, 5 + 2 + 1, 5 + 2 + 1, -2039584, false);
     }
 
     public static boolean isInMultiplayer() {
