@@ -2,7 +2,6 @@ package me.contaria.anglesnap.gui.camerasnap;
 
 import me.contaria.anglesnap.AngleSnap;
 import me.contaria.anglesnap.gui.config.AngleSnapConfigScreen;
-import me.contaria.anglesnap.gui.screen.AngleSnapScreen;
 import me.contaria.anglesnap.gui.screen.IconButtonWidget;
 import me.contaria.anglesnap.gui.warning.AngleSnapWarningScreen;
 import net.minecraft.client.MinecraftClient;
